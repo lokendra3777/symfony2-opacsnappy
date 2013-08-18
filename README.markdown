@@ -23,14 +23,13 @@ gamespy.com
 howstuffworks.com
 Like all semi-rational people do, let me show everything in a few steps (didn’t expect that, did you?):
 
-First thing that’ll we need here is of course wkhtmltopdf utility, which can be downloaded here - http://phantomjs.org
+First thing that’ll we need here is of course phantomjs utility, which can be downloaded here - http://phantomjs.org
  If you’re using Linux, the best place for unpacking archive’s content and place the 'phantomjs' binary/executable would be /usr/local/bin/ directory (but you can choose any other that suits you). Remember to grant 755 permissions on the executable.
 
 Next we’ll need to get the OpacSnappyBundle - Symfony 2.x wrapper bundle for the Snappy library which is a Php wrapper for phantomjs.
 My preferred way of fetching both is to manually use git clone in root directory of your Symfony2 project:
 
-git clone https://github.com/OpacLabs/opacsnappy.git vendor/opacsnappy
-git clone https://github.com/OpacLabs/OpacSnappyBundle.git vendor/bundles/Opac/Bundle/SnappyBundle
+git clone https://github.com/lokendra3777/symfony2-opacsnappy ./
 
 
 Once we have cloned both repositories, we must add proper namespaces in Symfony2’s composer. I prefer the manual way - you’ll need to add namespaces to the array in vendor/composer/autoload_namespaces.php file, just before '' => $baseDir . '/src/', element:
@@ -161,8 +160,8 @@ The bundle registers two services:
 Credits
 -------
 
-SnappyBundle and [Snappy][snappy] are based on the awesome [phantomjs][phantomjs].
-SnappyBundle has been developed by [OpacLabs][OpacLabs].
+OpacSnappyBundle and [opacsnappy] are based on the awesome [phantomjs][phantomjs].
+OpacSnappyBundle has been developed by [OpacLabs][OpacLabs].
 
 [snappy]: https://github.com/lokendra3777/symfony2-opacsnappy
 [phantomjs]: http://phantomjs.org/
