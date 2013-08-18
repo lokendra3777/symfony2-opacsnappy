@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="opac_snappy.image.internal_generator.class">Opac\Snappy\Image</parameter>
+        <parameter key="opac_snappy.image.class">Opac\Bundle\SnappyBundle\Snappy\LoggableGenerator</parameter>
+    </parameters>
+
+    <services>
+
+        <service id="opac_snappy.image.internal_generator" class="%opac_snappy.image.internal_generator.class%" public="false">
+            <argument>%opac_snappy.image.binary%</argument>
+            <argument>%opac_snappy.image.options%</argument>
+            <argument>%opac_snappy.image.env%</argument>
+        </service>
+
+        <service id="opac_snappy.image" class="%opac_snappy.image.class%">
+            <argument type="service" id="opac_snappy.image.internal_generator" />
+            <argument type="service" id="logger" on-invalid="null" />
+            <tag name="monolog.logger" channel="snappy" />
+        </service>
+
+    </services>
+
+</container>
