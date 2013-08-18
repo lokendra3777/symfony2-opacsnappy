@@ -6,28 +6,70 @@ It allows you to generate either pdf or image files from your html documents, us
 
 The OpacSnappyBundle provides a simple integration for your Symfony project.
 
-[![opacbundles.com](http://opacbundles.com/OpacLabs/OpacSnappyBundle/badge-short)](http://opacbundles.com/OpacLabs/OpacSnappyBundle)
+[![opaclabs.com](http://opacbundles.com/OpacLabs/OpacSnappyBundle/badge-short)](http://opacbundles.com/OpacLabs/OpacSnappyBundle)
 
 Installation
 ------------
 
-With [composer](http://packagist.org), add:
 
-    {
-        require: {
-            "opaclabs/opac-snappy-bundle": "dev-master"
-        }
-    }
 
-Then enable it in your kernel:
 
-    // app/AppKernel.php
-    public function registerBundles()
-    {
-        $bundles = array(
-            ...
-            new Opac\Bundle\SnappyBundle\OpacSnappyBundle(),
-            ...
+Don’t you just love to hear one lovely sentence - "Hey, we’ve got a new server-side generated PDF document to make". When you’re a Php developer, all you can do then is hit yourself in the face with an empty plate to prepare for incoming pain - all FPDF based libraries will make sure of that. But.. there’s a different solution - Wkhtmltopdf, WebKit based shell utility for html to pdf conversion written in C++. Now the question is - how to use it in Symfony 2.1.x framework?
+
+See the effects for yourself:
+
+cnn.com
+gamespy.com
+howstuffworks.com
+Like all semi-rational people do, let me show everything in a few steps (didn’t expect that, did you?):
+
+First thing that’ll we need here is of course wkhtmltopdf utility, which can be downloaded here - http://phantomjs.org
+ If you’re using Linux, the best place for unpacking archive’s content and place the 'phantomjs' binary/executable would be /usr/local/bin/ directory (but you can choose any other that suits you). Remember to grant 755 permissions on the executable.
+
+Next we’ll need to get the OpacSnappyBundle - Symfony 2.x wrapper bundle for the Snappy library which is a Php wrapper for phantomjs.
+My preferred way of fetching both is to manually use git clone in root directory of your Symfony2 project:
+
+git clone https://github.com/OpacLabs/opacsnappy.git vendor/opacsnappy
+git clone https://github.com/OpacLabs/OpacSnappyBundle.git vendor/bundles/Opac/Bundle/SnappyBundle
+
+
+Once we have cloned both repositories, we must add proper namespaces in Symfony2’s composer. I prefer the manual way - you’ll need to add namespaces to the array in vendor/composer/autoload_namespaces.php file, just before '' => $baseDir . '/src/', element:
+return array(
+    ...
+    // General Knp bundles namespace
+    'Opac' => $vendorDir . '/bundles/',
+    // Snappy library namespace
+    'Opac\\Snappy'  => $vendorDir . '/opacsnappy/src/',
+    
+Just one more step - we’ll need to add OpacSnappyBundle to app/AppKernel.php to registered namespaces array:
+public function registerBundles()
+{
+    $bundles = array(
+        ...
+        new Opac\Bundle\SnappyBundle\OpacSnappyBundle(),  
+        
+        
+Snappy can be called by using the get service method on any container object. In controller actions the magic is done like this:
+$this->get('opac_snappy.pdf')->generate('http://www.cnn.com', '/var/www/my_app/web/pdf');         
+    
+    
+Above code will save target webpage to a PDF file. You can also output any twig template in controller return statement like this:
+
+return new Response(
+    $this->get('opac_snappy.pdf')->getOutputFromHtml(
+        $this->renderView(
+            'ExampleBundle:Something:sweetPdfTemplate.html.twig', 
+            array()
+        )
+    ),
+    200,
+    array(
+        'Content-Type'          => 'application/pdf',
+        'Content-Disposition'   => 'attachment; filename="pdf-file.pdf"'
+    )
+);
+
+    
 
 Configuration
 -------------
@@ -39,11 +81,11 @@ If you need to change the binaries, change the instance options or even disable 
         pdf:
             enabled:    true
             binary:     /usr/local/bin/phantomjs
-            options:    []
+            options:    
         image:
             enabled:    true
             binary:     /usr/local/bin/phantomjs
-            options:    []
+            options:    
 
 Usage
 -----
