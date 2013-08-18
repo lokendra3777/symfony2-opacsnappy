@@ -23,48 +23,50 @@ First thing that値l we need here is of course phantomjs utility, which can be do
 Next we値l need to get the OpacSnappyBundle - Symfony 2.x wrapper bundle for the Snappy library which is a Php wrapper for phantomjs.
 My preferred way of fetching both is to manually use git clone in root directory of your Symfony2 project:
 
-###
-   git clone https://github.com/lokendra3777/symfony2-opacsnappy ./
+### Extension 
+    git clone https://github.com/lokendra3777/symfony2-opacsnappy ./
 
 
-### Once we have cloned both repositories, we must add proper namespaces in Symfony2痴 composer. I prefer the manual way - you値l need to add namespaces to the array in vendor/composer/autoload_namespaces.php file, just before '' => $baseDir . '/src/', element:
+### Composer - Manual Entry
+    Once we have cloned both repositories, we must add proper namespaces in Symfony2痴 composer. I prefer the manual way - you値l need to add namespaces to the array in vendor/composer/autoload_namespaces.php file, just before '' => $baseDir . '/src/', element:
 
-   return array(
-    ...
-    // General Knp bundles namespace
-    'Opac' => $vendorDir . '/bundles/',
-    // Snappy library namespace
-    'Opac\\Snappy'  => $vendorDir . '/opacsnappy/src/',
+     return array(
+       ...
+      // General Knp bundles namespace
+      'Opac' => $vendorDir . '/bundles/',
+      // Snappy library namespace
+      'Opac\\Snappy'  => $vendorDir . '/opacsnappy/src/',
     
 ### Just one more step - we値l need to add OpacSnappyBundle to app/AppKernel.php to registered namespaces array:
 
 
-   public function registerBundles()
-   {
-      $bundles = array(
+     public function registerBundles()
+     {
+       $bundles = array(
         ...
         new Opac\Bundle\SnappyBundle\OpacSnappyBundle(),  
         
-        
-Snappy can be called by using the get service method on any container object. In controller actions the magic is done like this:
-$this->get('opac_snappy.pdf')->generate('http://www.cnn.com', '/var/www/my_app/web/pdf');         
+
+## Test        
+   Snappy can be called by using the get service method on any container object. In controller actions the magic is done like this:
+   $this->get('opac_snappy.pdf')->generate('http://www.cnn.com', '/var/www/my_app/web/pdf');         
     
     
 ###  Above code will save target webpage to a PDF file. You can also output any twig template in controller return statement like this:
 
-   return new Response(
-    $this->get('opac_snappy.pdf')->getOutputFromHtml(
+     return new Response(
+       $this->get('opac_snappy.pdf')->getOutputFromHtml(
         $this->renderView(
             'ExampleBundle:Something:sweetPdfTemplate.html.twig', 
             array()
         )
-    ),
-    200,
-    array(
+      ),
+      200,
+      array(
         'Content-Type'          => 'application/pdf',
         'Content-Disposition'   => 'attachment; filename="pdf-file.pdf"'
-    )
-  );
+      )
+    );
 
     
 
